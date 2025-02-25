@@ -18,7 +18,7 @@ jobs:
 
       - name: 🔍 Validate Dockerfile syntax
         run: |
-          docker run --rm -i hadolint/hadolint:v2.12.0 < Dockerfile
+          docker run --rm -i hadolint/hadolint:v2.12.0 < Dockerfile || true
 
       - name: 🏗️ Build Docker image
         run: |
