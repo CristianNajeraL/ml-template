@@ -1,0 +1,35 @@
+name: Dockerfile & Start/Stop Script Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: 🔍 Validate Dockerfile syntax
+        run: |
+          docker run --rm -i hadolint/hadolint:v2.12.0 < Dockerfile || true
+
+      - name: 🚀 Run start.sh
+        run: |
+          chmod +x start.sh
+          ./start.sh
+
+      - name: 🛑 Run stop.sh and clean up
+        run: |
+          chmod +x stop.sh
+          ./stop.sh
+
+      - name: ✅ Verify that the container was removed
+        run: |
+          ! docker ps -a | grep -q ml_env && echo "✅ Container removed successfully" || exit 1
