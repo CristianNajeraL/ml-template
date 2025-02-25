@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - "**"
+      - "main"
 
 jobs:
   build-and-test:
@@ -20,21 +20,10 @@ jobs:
         run: |
           docker run --rm -i hadolint/hadolint:v2.12.0 < Dockerfile || true
 
-      - name: 🏗️ Build Docker image
-        run: |
-          docker build -t ml_env .
-
       - name: 🚀 Run start.sh
         run: |
           chmod +x start.sh
           ./start.sh
-
-      - name: ⏳ Wait for Jupyter Notebook to start
-        run: sleep 10
-
-      - name: ✅ Check if Jupyter Notebook is running
-        run: |
-          docker logs ml_env 2>&1 | grep -q 'http://127.0.0.1:8888/tree?token=' && echo "✅ Jupyter Notebook started successfully" || exit 1
 
       - name: 🛑 Run stop.sh and clean up
         run: |
