@@ -10,37 +10,37 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout del código
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🐳 Configurar Docker Buildx
+      - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: 🔍 Validar sintaxis del Dockerfile
+      - name: 🔍 Validate Dockerfile syntax
         run: |
-          docker run --rm -i hadolint/hadolint < Dockerfile
+          docker run --rm -i hadolint/hadolint:v2.12.0 < Dockerfile
 
-      - name: 🏗️ Construir imagen de Docker
+      - name: 🏗️ Build Docker image
         run: |
           docker build -t ml_env .
 
-      - name: 🚀 Ejecutar start.sh
+      - name: 🚀 Run start.sh
         run: |
           chmod +x start.sh
           ./start.sh
 
-      - name: ⏳ Esperar a que Jupyter Notebook inicie
+      - name: ⏳ Wait for Jupyter Notebook to start
         run: sleep 10
 
-      - name: ✅ Verificar que Jupyter Notebook está corriendo
+      - name: ✅ Check if Jupyter Notebook is running
         run: |
-          docker logs ml_env 2>&1 | grep -q 'http://127.0.0.1:8888/tree?token=' && echo "✅ Jupyter Notebook iniciado correctamente" || exit 1
+          docker logs ml_env 2>&1 | grep -q 'http://127.0.0.1:8888/tree?token=' && echo "✅ Jupyter Notebook started successfully" || exit 1
 
-      - name: 🛑 Ejecutar stop.sh y limpiar
+      - name: 🛑 Run stop.sh and clean up
         run: |
           chmod +x stop.sh
           ./stop.sh
 
-      - name: ✅ Verificar que el contenedor fue eliminado
+      - name: ✅ Verify that the container was removed
         run: |
-          ! docker ps -a | grep -q ml_env && echo "✅ Contenedor eliminado correctamente" || exit 1
+          ! docker ps -a | grep -q ml_env && echo "✅ Container removed successfully" || exit 1
